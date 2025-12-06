@@ -1,6 +1,5 @@
 #include <iostream>
 #include <vector>
-#include <windows.h>
 #include <thread>
 #include <chrono>
 
@@ -44,7 +43,6 @@ void makeMove(int column, bool isPlayer1, std::vector<std::vector<char>>& board)
                 board[i][column] = 'O';
             }
             printBoard(board);
-            Sleep(500);
             // std::cout << "\x1b[2J\033[1A";
         } else {
             if (isPlayer1) {
@@ -53,7 +51,6 @@ void makeMove(int column, bool isPlayer1, std::vector<std::vector<char>>& board)
                 board[i][column] = 'O';
             }
             printBoard(board);
-            Sleep(500);
             // Clear terminal
             //system("cls");
         }
