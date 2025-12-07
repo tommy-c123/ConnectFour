@@ -62,12 +62,13 @@ int main() {
         { 5, 0 },
         { 6, 0 },
     };
-    makeMove(0, true, connectFourBoard, colsFilled[0]);
-    printBoard(connectFourBoard);
+    // makeMove(0, true, connectFourBoard, colsFilled[0]);
+    // printBoard(connectFourBoard);
     // std::cout.write(&connectFourBoard[0][0], connectFourBoard.size());
     // std::cout.write(&connectFourBoard[0][1], connectFourBoard.size());
     // std::cout << "Jello, world!" << std::endl;
     // std::this_thread::sleep_for(std::chrono::milliseconds(500));
     // // std::cout << "\033[1A";  // Move cursor up one line
     // std::cout << "Hello, world!" << std::endl;
+    std::cout << "Hello there";
 }
