@@ -6,13 +6,13 @@ std::vector<std::vector<char>> connectFourBoard = {
         {' ', ' ', ' ', ' ', ' ', ' ', ' '},
         {' ', ' ', ' ', ' ', ' ', ' ', ' '},
         {' ', ' ', ' ', ' ', ' ', ' ', ' '},
-        {' ', ' ', ' ', ' ', ' ', ' ', ' '},
-        {' ', ' ', ' ', ' ', ' ', ' ', ' '},
+        {'X', ' ', ' ', ' ', ' ', ' ', ' '},
+        {'X', ' ', ' ', ' ', ' ', ' ', ' '},
         {'X', ' ', ' ', ' ', ' ', ' ', ' '}
     };
 
 std::unordered_map<int, int> colsFilled = {
-    { 0, 1 },
+    { 0, 3 },
     { 1, 0 },
     { 2, 0 },
     { 3, 0 },
@@ -21,10 +21,31 @@ std::unordered_map<int, int> colsFilled = {
     { 6, 0 },
 };
 
-bool checkWin(const std::vector<std::vector<char>>& board) {
-    // vertical
+bool checkVertical(int column, std::vector<std::vector<char>>& board) {
+    int count = 1;
+    for (int i = 0; i < 5; i++) {
+        if (board[colsFilled[column]][column] == board[colsFilled[column] - i][column]) {
+            count++;
+        } else {
+            break;
+        }
+    }
 
+    if (count == 4) {
+        return true;
+    } else {
+        return false;
+    }
 }
+
+// bool checkWin(std::vector<std::vector<char>>& board, int column) {
+//     // vertical
+//     while (true) {
+//         if (board[colsFilled[column]][column] == ) {}
+//     }
+
+//     return true;
+// }
 
 void printBoard(const std::vector<std::vector<char>>& board) {
     std::cout << " 1 2 3 4 5 6 7 \n" ;
@@ -77,8 +98,15 @@ int main() {
     //     std::cin >> continueGame;
     // }
 
-    makeMove(0, true, connectFourBoard);
+    // while(checkWin(connectFourBoard, 0)) {
+
+    // }
+    // makeMove(0, false, connectFourBoard);
     printBoard(connectFourBoard);
 
-
+    if (checkVertical(0, connectFourBoard)) {
+        std::cout << "Win";
+    } else {
+        std::cout << "Lose";
+    }
 }
