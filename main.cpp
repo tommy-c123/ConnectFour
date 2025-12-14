@@ -5,14 +5,14 @@
 std::vector<std::vector<char>> connectFourBoard = {
         {' ', ' ', ' ', ' ', ' ', ' ', ' '},
         {' ', ' ', ' ', ' ', ' ', ' ', ' '},
-        {' ', ' ', ' ', ' ', ' ', ' ', ' '},
-        {'X', ' ', ' ', ' ', ' ', ' ', ' '},
-        {'X', ' ', ' ', ' ', ' ', ' ', ' '},
-        {'X', ' ', ' ', ' ', ' ', ' ', ' '}
+        {'O', ' ', ' ', ' ', ' ', ' ', ' '},
+        {'O', ' ', ' ', ' ', ' ', ' ', ' '},
+        {'O', ' ', ' ', ' ', ' ', ' ', ' '},
+        {'O', ' ', ' ', ' ', ' ', ' ', ' '}
     };
 
 std::unordered_map<int, int> colsFilled = {
-    { 0, 3 },
+    { 0, 4 },
     { 1, 0 },
     { 2, 0 },
     { 3, 0 },
@@ -21,22 +21,26 @@ std::unordered_map<int, int> colsFilled = {
     { 6, 0 },
 };
 
-bool checkVertical(int column, std::vector<std::vector<char>>& board) {
+bool checkVertical(const int column, std::vector<std::vector<char>>& board) {
     int count = 1;
-    for (int i = 0; i < 5; i++) {
-        if (board[colsFilled[column]][column] == board[colsFilled[column] - i][column]) {
-            count++;
-        } else {
-            break;
+
+    const int row = colsFilled[column];
+    if (row > 3) {
+        for (int i = 0; i < 4; i++) {
+            if (board[row][column] == board[row - i][column]) {
+                count++;
+            } else {
+                break;
+            }
         }
     }
-
     if (count == 4) {
         return true;
-    } else {
-        return false;
     }
+    return false;
 }
+
+
 
 // bool checkWin(std::vector<std::vector<char>>& board, int column) {
 //     // vertical
