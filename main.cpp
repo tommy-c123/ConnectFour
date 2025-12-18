@@ -2,32 +2,34 @@
 #include <vector>
 #include <unordered_map>
 
+// store the board in a vector of vectors of chars, X is player 1, O is player 2
 std::vector<std::vector<char>> connectFourBoard = {
         {' ', ' ', ' ', ' ', ' ', ' ', ' '},
-        {' ', ' ', ' ', ' ', ' ', ' ', ' '},
-        {'O', ' ', ' ', ' ', ' ', ' ', ' '},
-        {'O', ' ', ' ', ' ', ' ', ' ', ' '},
-        {'O', ' ', ' ', ' ', ' ', ' ', ' '},
-        {' ', 'X', 'X', 'X', ' ', ' ', ' '}
+        {' ', ' ', ' ', ' ', ' ', ' ', 'O'},
+        {' ', ' ', ' ', ' ', ' ', ' ', 'O'},
+        {' ', ' ', ' ', ' ', ' ', ' ', 'O'},
+        {' ', ' ', ' ', ' ', ' ', ' ', 'O'},
+        {'X', 'X', 'X', 'X', ' ', ' ', 'X'}
     };
 
+// store how many pieces are in each column, to decide where to put pieces, and used for the checkWin function
 std::unordered_map<int, int> colsFilled = {
-    { 0, 4 },
+    { 0, 1 },
     { 1, 1 },
     { 2, 1 },
     { 3, 1 },
     { 4, 0 },
     { 5, 0 },
-    { 6, 0 },
+    { 6, 5 },
 };
 
 bool checkVertical(const int column, std::vector<std::vector<char>>& board) {
     int count = 1;
 
-    const int row = colsFilled[column];
-    if (row > 3) {
-        for (int i = 0; i < 4; i++) {
-            if (board[row][column] == board[row - i][column]) {
+    const int row = 6 - colsFilled[column];
+    if (row < 3) {
+        for (int i = 1; i < 4; i++) {
+            if (board[row][column] == board[row + i][column]) {
                 count++;
             } else {
                 break;
@@ -42,7 +44,7 @@ bool checkHorizontal(const int column, std::vector<std::vector<char>>& board) {
     bool right = true;
     bool left = true;
 
-    const int row = colsFilled[column];
+    const int row = 6 - colsFilled[column];
 
     for (int i = 1; i <= 4; i++) {
         if (board[row][column] == board[row][column+i] && right) {
@@ -131,11 +133,11 @@ int main() {
     // makeMove(0, false, connectFourBoard);
     printBoard(connectFourBoard);
 
-    // if (checkVertical(0, connectFourBoard)) {
-    //     std::cout << "Win vertical";
-    // } else {
-    //     std::cout << "Lose vertical";
-    // }
+    if (checkVertical(6, connectFourBoard)) {
+        std::cout << "Win vertical";
+    } else {
+        std::cout << "Lose vertical";
+    }
 
     std::cout << std::endl;
     if (checkHorizontal(1, connectFourBoard)) {
