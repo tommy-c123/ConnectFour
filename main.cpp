@@ -3,8 +3,6 @@
 #include <vector>
 #include <unordered_map>
 
-// test comment
-
 // store the board in a vector of vectors of chars, X is player 1, O is player 2.
 std::vector<std::vector<char>> connectFourBoard = {
         {' ', ' ', ' ', ' ', ' ', ' ', ' '},
