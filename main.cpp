@@ -26,7 +26,7 @@ std::unordered_map<int, int> colsFilled = {
 
 // total number of pieces, used to check for draw
 int piecesPlayed = 0;
-int totalPieces = 42;
+constexpr int totalPieces = 42;
 
 // reset the board to play again
 void clearBoard(std::vector<std::vector<char>>& board, std::unordered_map<int, int>& filled) {
@@ -50,22 +50,23 @@ void clearBoard(std::vector<std::vector<char>>& board, std::unordered_map<int, i
     };
 }
 
+// ensure the user enters a valid column number, if not, keep prompting them until they do
 int inputValidator() {
     int column = 0;
     while (!(std::cin >> column) || !((1 <= column) && (column <= 7))) {
-        std::cout << "Invalid input. Please enter an integer (1-7): ";
+        std::cout << "Invalid input. Please enter a column number (1-7): ";
         std::cin.clear();
         std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
     }
     return column;
 }
 
-
-int countPieces(int row, int column, int rowDelta, int columnDelta, const std::vector<std::vector<char>>& board) {
+// this function counts consecutive identical pieces, and has bounds checking for the size of the board
+int countConsecutivePieces(int row, int column, const int rowDelta, const int columnDelta, const std::vector<std::vector<char>>& board) {
     int count = 0;
-    char currentPiece = board[row][column];
-    int rows = 6;
-    int columns = 7;
+    const char currentPiece = board[row][column];
+    constexpr int rows = 6;
+    constexpr int columns = 7;
 
     while (row >= 0 && row < rows && column >= 0 && column < columns && board[row][column] == currentPiece) {
         count++;
@@ -75,50 +76,59 @@ int countPieces(int row, int column, int rowDelta, int columnDelta, const std::v
     return count;
 }
 
+// see if the last played piece makes a vertical win (|)
 bool checkVertical(const int column, std::vector<std::vector<char>>& board) {
     const int row = 6 - colsFilled[column];
 
-    if (countPieces(row, column, 1, 0, board) >= 4) {
+    if (countConsecutivePieces(row, column, 1, 0, board) >= 4) {
         return true;
     }
     return false;
 }
 
+// see if the last played piece makes a horizontal win (-)
 bool checkHorizontal(const int column, std::vector<std::vector<char>>& board) {
     const int row = 6 - colsFilled[column];
 
-    if (countPieces(row, column, 0, -1, board) + countPieces(row, column, 0, 1, board) - 1 >= 4) {
+    if (countConsecutivePieces(row, column, 0, -1, board) + countConsecutivePieces(row, column, 0, 1, board) - 1 >= 4) {
         return true;
     }
     return false;
 }
 
+// see if the last played piece makes a diagonal win (\ or /)
 bool checkDiagonal(const int column, std::vector<std::vector<char>>& board) {
     const int row = 6 - colsFilled[column];
 
-    if (countPieces(row, column, -1, -1, board) + countPieces(row, column, 1, 1, board) - 1 >= 4) {
+    // check for \ diagonal
+    if (countConsecutivePieces(row, column, -1, -1, board) + countConsecutivePieces(row, column, 1, 1, board) - 1 >= 4) {
         return true;
     }
 
-    if (countPieces(row, column, -1, 1, board) + countPieces(row, column, 1, -1, board) - 1 >= 4) {
+    // check for / diagonal
+    if (countConsecutivePieces(row, column, -1, 1, board) + countConsecutivePieces(row, column, 1, -1, board) - 1 >= 4) {
         return true;
     }
 
     return false;
 }
 
-bool checkWin(int column, std::vector<std::vector<char>>& board) {
+// check for every type of win
+bool checkWin(const int column, std::vector<std::vector<char>>& board) {
     return checkHorizontal(column, board) || checkVertical(column, board) || checkDiagonal(column, board);
 }
 
+// print the connect four board, adding column numbers, colouring, and lines in between columns with the | character
 void printBoard(const std::vector<std::vector<char>>& board) {
     std::cout << " 1 2 3 4 5 6 7 \n" ;
     for (const std::vector<char>& row : board) {
         std::cout << "|";
         for (const char cell : row) {
             if (cell == 'X') {
+                // \x1b[31m = ANSI escape code for red foreground, \x1b[0m resets
                 std::cout << "\x1b[31m" << cell << "\x1b[0m|";
             } else if (cell == 'O') {
+                // \x1b[33m = ANSI escape code for yellow foreground, \x1b[0m resets
                 std::cout << "\x1b[33m" << cell << "\x1b[0m|";
             } else {
                 std::cout << cell << "|";
@@ -129,6 +139,7 @@ void printBoard(const std::vector<std::vector<char>>& board) {
     std::cout << "---------------\n" ;
 }
 
+// function to add a piece to the board
 void makeMove(const int column, const bool isPlayer1, std::vector<std::vector<char>>& board) {
     const int rowToChange = 5 - colsFilled[column];
 
@@ -143,21 +154,22 @@ void makeMove(const int column, const bool isPlayer1, std::vector<std::vector<ch
     } else {
         board[rowToChange][column] = 'O';
     }
-    printBoard(board);
     // ANSI escape code to clear the console and return the cursor to the top left
-    std::cout << "\x1b[2J\033[1A";
-
+    std::cout << "\033[2J\033[1;1H";
+    printBoard(board);
     colsFilled[column]++;
     piecesPlayed++;
 }
 
 
 int main() {
-    bool isPlayer1 = true;
     char continueGame = 'y';
+
+    // this while loop allows the user to play again if they enter "y"
     while (continueGame == 'y') {
         printBoard(connectFourBoard);
-        isPlayer1 = true;
+        bool isPlayer1 = true;
+        // this while loop continues until the board is full, in which case it is a draw
         while (piecesPlayed < totalPieces) {
             int selectedColumn = 0;
             if (isPlayer1) {
@@ -166,7 +178,7 @@ int main() {
                 makeMove(selectedColumn - 1, isPlayer1, connectFourBoard);
 
                 if (checkWin(selectedColumn - 1, connectFourBoard)) {
-                    std::cout << "Player 1 wins!";
+                    std::cout << "Player 1 wins!\n";
                     break;
                 }
 
@@ -177,13 +189,14 @@ int main() {
                 makeMove(selectedColumn - 1, isPlayer1, connectFourBoard);
 
                 if (checkWin(selectedColumn - 1, connectFourBoard)) {
-                    std::cout << "Player 2 wins!";
+                    std::cout << "Player 2 wins!\n";
                     break;
                 }
 
                 isPlayer1 = true;
             }
         }
+        // reset the board
         clearBoard(connectFourBoard, colsFilled);
         std::cout << "Would you like to play again? (y/n) ";
         std::cin >> continueGame;
@@ -191,27 +204,4 @@ int main() {
             std::cout << "The game was a draw!";
         }
     }
-
-
-    // makeMove(0, false, connectFourBoard);
-    // makeMove(4, true, connectFourBoard);
-    // printBoard(connectFourBoard);
-    //
-    // if (checkVertical(4, connectFourBoard)) {
-    //     std::cout << "Win vertical";
-    // } else {
-    //     std::cout << "Lose vertical";
-    // }
-    // if (checkHorizontal(0, connectFourBoard)) {
-    //     std::cout << "Win horizontal";
-    // } else {
-    //     std::cout << "Lose horizontal";
-    // }
-    //
-    // std::cout << std::endl;
-    // if (checkDiagonal(2, connectFourBoard)) {
-    //     std::cout << "Win diagonal ";
-    // } else {
-    //     std::cout << "Lose diagonal";
-    // }
 }
